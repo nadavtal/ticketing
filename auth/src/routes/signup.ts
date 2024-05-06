@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { User } from '../models/user';
-import { BadRequestError, validateRequest } from '@ntatickets/common';
 import jwt from 'jsonwebtoken';
+import { validateRequest, BadRequestError } from '@ntatickets/common';
+
+import { User } from '../models/user';
 
 const router = express.Router();
 
@@ -19,7 +20,6 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-
     const { email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
@@ -31,7 +31,6 @@ router.post(
     const user = User.build({ email, password });
     await user.save();
 
-    // console.log("process.env.JWT_KEY", process.env.JWT_KEY)
     // Generate JWT
     const userJwt = jwt.sign(
       {
@@ -45,7 +44,7 @@ router.post(
     req.session = {
       jwt: userJwt
     };
-    console.log("signup", req.session.jwt)
+
     res.status(201).send(user);
   }
 );
