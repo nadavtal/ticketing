@@ -1,35 +1,41 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import { validateRequest, BadRequestError } from "@ntatickets/common";
-import { User } from "../models/user";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import { validateRequest, BadRequestError } from '@ntatickets/common';
 
-import { Password } from "../services/password";
-import jwt from 'jsonwebtoken'; 
+import { Password } from '../services/password';
+import { User } from '../models/user';
 
 const router = express.Router();
 
 router.post(
-  "/api/users/signin",
+  '/api/users/signin',
   [
-    body("email").isEmail().withMessage("Email must be valid"),
-    body("password")
+    body('email')
+      .isEmail()
+      .withMessage('Email must be valid'),
+    body('password')
       .trim()
       .notEmpty()
-      .withMessage("You must supply a password"),
+      .withMessage('You must supply a password')
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
-    console.log({existingUser})
     if (!existingUser) {
-      throw new BadRequestError("Invalid credentials");
+      throw new BadRequestError('Invalid credentials');
     }
 
-    const passwordsMatch = await Password.compare(existingUser.password, password);
+    const passwordsMatch = await Password.compare(
+      existingUser.password,
+      password
+    );
     if (!passwordsMatch) {
-      throw new BadRequestError("Invalid credentials");
+      throw new BadRequestError('Invalid Credentials');
     }
+
     // Generate JWT
     const userJwt = jwt.sign(
       {
@@ -40,7 +46,6 @@ router.post(
     );
 
     // Store it on session object
-    console.log("sign in userJwt", userJwt)
     req.session = {
       jwt: userJwt
     };
