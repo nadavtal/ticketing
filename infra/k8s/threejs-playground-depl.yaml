@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: threejs-playground-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: threejs-playground
+  template:
+    metadata:
+      labels:
+        app: threejs-playground
+    spec:
+      containers:
+        - name: threejs-playground
+          image: nadavtalalmagor/threejs-playground
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: threejs-playground-srv
+spec:
+  selector:
+    app: threejs-playground
+  ports:
+    - name: threejs-playground
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
