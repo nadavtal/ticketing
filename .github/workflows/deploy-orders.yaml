@@ -1,0 +1,43 @@
+name: deploy-orders
+
+on: 
+  push:
+    branches: [ main ]
+    paths: 
+      - 'orders/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: build docker image
+        run: |
+          cd orders
+          docker build -t nadavtalalmagor/orders .
+
+      - name: Login to docker
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env: 
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push to docker
+        run: |
+          docker push nadavtalalmagor/orders
+
+      - name: Install Doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Connect to kubernetes cluster
+        run: |
+          doctl kubernetes cluster kubeconfig save ticketing
+
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment orders-depl
+          
