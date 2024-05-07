@@ -4,7 +4,7 @@ import { OrderCreatedListener } from './events/listeners/order-created-listener'
 
 
 const start = async () => {
-
+  console.log('Starting expiration service')
   if (!process.env.NATS_URL) {
     throw new Error('NATS_URL must be defined');
   }
