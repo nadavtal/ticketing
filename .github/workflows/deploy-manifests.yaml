@@ -1,0 +1,27 @@
+name: deploy-manifests
+
+on: 
+  push:
+    branches: [ main ]
+    paths: 
+      - 'infra/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Connect to kubernetes cluster
+        run: |
+          doctl kubernetes cluster kubeconfig save ticketing
+
+      - name: Apply Infra
+        run: |
+          kubectl apply -f infra/k8s && kubectl apply -f infra/k8s-prod
+          
