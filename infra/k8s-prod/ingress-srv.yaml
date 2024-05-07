@@ -53,6 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
+    kubernetes.digitalocean.com/load-balancer-id: "a994f1e10c18648bdac260ac692b9a9f"
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
     service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.future-feature.com'
   labels:
