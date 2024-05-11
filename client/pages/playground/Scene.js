@@ -68,7 +68,7 @@ const Scene = ({ selectedShape, shapes, showPoints, logId, iconFile }) => {
     <>
       {/* <Button onClick={handleClick} /> */}
       {/* <MyText scene={scene} /> */}
-    <IconCreater file={iconFile} scene={scene}/>
+    <IconCreater file={iconFile} scene={scene} url={iconFile}/>
       {/* {positions && (
         <Points
           selectedShape={selectedShape}

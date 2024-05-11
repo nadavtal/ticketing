@@ -24,6 +24,8 @@ import {
 import { useEffect, useMemo, useState, useRef } from "react";
 import PointsSettings from "../../components/PointsSettings";
 import Scene from "./Scene";
+import UploadFile from "../../components/UploadFile";
+
 
 // const shapes = Object.keys(paths)
 
@@ -33,9 +35,12 @@ const Playground = () => {
   const [showPoints, setShowPoints] = useState(true);
   const [imageSrc, setImageSrc] = useState(null);
   const [iconFile, setIconFile] = useState(null);
+  const [file, setFile] = useState(null);
+
   const [logId, setLogId] = useState();
   const prevPropRef = useRef("circle");
   const wrapperRef = useRef();
+
   const count = device == "desktop" ? 100 : 50;
   const sep = device == "desktop" ? 3 : 6;
   const shapes = {
@@ -63,7 +68,10 @@ const Playground = () => {
         shapes={Object.keys(shapes)}
         onClick={(shape) => setSelectedShape(shape)}
       />
-
+      <UploadFile 
+        file={file}
+        
+        />
       {/* <PointsSettings /> */}
       <div
         ref={wrapperRef}
@@ -92,12 +100,15 @@ const Playground = () => {
           }}
         >
           <button onClick={() => setLogId(Date.now())}>Create Image</button>
+
           <input
             type="file"
             onChange={(event) => {
-              console.log(event)
               const file = event.target.files[0];
-              setIconFile(file);
+              console.log(file)
+              // console.log(URL.createObjectURL(file))
+              setIconFile(URL.createObjectURL(file));
+              setFile(file)
               const reader = new FileReader();
 
               reader.onloadend = () => {
@@ -109,6 +120,14 @@ const Playground = () => {
               }
             }}
           />
+          {/* <form method="post" enctype="multipart/form-data" 
+            onSubmit={form => {
+              console.log(form)
+            }}>
+            <label for="file">Upload a file</label>
+            <input type="file" name="upload" />
+            <input type="submit" class="button" />
+          </form> */}
           {imageSrc && <img src={imageSrc} alt="Uploaded SVG" style={{
             backgroundColor: "white"
           }}/>}
