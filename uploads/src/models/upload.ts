@@ -1,31 +1,32 @@
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-interface TicketAttrs {
-  title: string;
-  price: number;
+interface UploadAttrs {
+  fileName: string;
+  destination: string;
   userId: string;
+  status: string;
 }
 
-interface TicketDoc extends mongoose.Document {
-  title: string;
-  price: number;
+interface UploadDoc extends mongoose.Document {
+  fileName: string;
+  destination: string;
   userId: string;
   version: number;
-  orderId?: string;
+  status: string;
 }
 
-interface TicketModel extends mongoose.Model<TicketDoc> {
-  build(attrs: TicketAttrs): TicketDoc;
+interface UploadModel extends mongoose.Model<UploadDoc> {
+  build(attrs: UploadAttrs): UploadDoc;
 }
 
 const ticketSchema = new mongoose.Schema(
   {
-    title: {
+    fileName: {
       type: String,
       required: true,
     },
-    price: {
+    destination: {
       type: Number,
       required: true,
     },
@@ -33,7 +34,7 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    orderId: {
+    status: {
       type: String,
     },
   },
@@ -49,10 +50,10 @@ const ticketSchema = new mongoose.Schema(
 ticketSchema.set('versionKey', 'version');
 ticketSchema.plugin(updateIfCurrentPlugin);
 
-ticketSchema.statics.build = (attrs: TicketAttrs) => {
+ticketSchema.statics.build = (attrs: UploadAttrs) => {
   return new Ticket(attrs);
 };
 
-const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
+const Ticket = mongoose.model<UploadDoc, UploadModel>('Ticket', ticketSchema);
 
 export { Ticket };
