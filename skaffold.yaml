@@ -41,6 +41,14 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    - image: nadavtalalmagor/uploads
+      context: uploads
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
     - image: nadavtalalmagor/expiration
       context: expiration
       docker:

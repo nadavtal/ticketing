@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uploads-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uploads
+  template:
+    metadata:
+      labels:
+        app: uploads
+    spec:
+      containers:
+        - name: uploads
+          image: nadavtalalmagor/uploads
+          env:
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: MONGO_URI
+              value: 'mongodb://uploads-mongo-srv:27017/uploads'
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'ticketingg'
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uploads-srv
+spec:
+  selector:
+    app: uploads
+  ports:
+    - name: uploads
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
