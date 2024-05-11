@@ -1,0 +1,11 @@
+.page {
+    height: calc(100svh - 60px);
+    background-color: black;
+    overflow: hidden;
+}
+
+.shapes {
+    position: absolute;
+    z-index: 1;
+    color: white;
+}
