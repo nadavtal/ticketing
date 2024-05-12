@@ -68,10 +68,10 @@ const Playground = () => {
         shapes={Object.keys(shapes)}
         onClick={(shape) => setSelectedShape(shape)}
       />
-      <UploadFile 
+      {/* <UploadFile 
         file={file}
         
-        />
+        /> */}
       {/* <PointsSettings /> */}
       <div
         ref={wrapperRef}
@@ -129,7 +129,12 @@ const Playground = () => {
             <input type="submit" class="button" />
           </form> */}
           {imageSrc && <img src={imageSrc} alt="Uploaded SVG" style={{
-            backgroundColor: "white"
+            backgroundColor: "white",
+            width: '10rem',
+            height: 'auto',
+            position: 'absolute',
+            top: '5rem',
+            left: '1rem',
           }}/>}
         </div>
       </div>

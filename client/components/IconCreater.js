@@ -63,6 +63,7 @@ const IconCreater = ({
   // }, [file])
   useEffect(() => {
     if (url) loadIcon(url);
+    else setPositions(null);
   }, [url]);
 
   function mergeFloat32Arrays(arrays) {
@@ -86,7 +87,7 @@ const IconCreater = ({
         const paths = data.paths;
         const group = new Group();
         console.log({ paths });
-        // createPointsFromPaths(paths);
+        createPointsFromPaths(paths);
         for (let i = 0; i < paths.length; i++) {
           const path = paths[i];
           const material = new MeshBasicMaterial({
@@ -99,7 +100,7 @@ const IconCreater = ({
           console.log({ shapes });
           for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
-            createPointsFromShape(shape);
+            // createPointsFromShape(shape);
             const geometry = new ShapeGeometry(shape);
             // console.log({geometry})
             geometry.attributes.position.array = normalize(
@@ -107,17 +108,15 @@ const IconCreater = ({
             );
             // positionsArrays.current.push(geometry.attributes.position.array)
             const mesh = new Mesh(geometry, material);
-
+          
             group.add(mesh);
           }
         }
+        group.position.x = 2
         groupRef.current = group;
         // console.log(positionsArrays.current);
-        const merged = mergeFloat32Arrays(positionsArrays.current);
-        const normalizedArray = normalize(merged);
-        // console.log(merged)
-        setPositions(normalizedArray);
-        // scene.add( group );
+
+        scene.add( group );
       },
       // called when loading is in progresses
       function (xhr) {
@@ -194,6 +193,10 @@ const IconCreater = ({
         );
       });
     }
+    const merged = mergeFloat32Arrays(positionsArrays.current);
+    const normalizedArray = normalize(merged);
+    // console.log(merged)
+    setPositions(normalizedArray);
   };
 
   const createPointsFromCurves = (curves, divisions) => {
@@ -206,31 +209,14 @@ const IconCreater = ({
   };
 
   const createPointsFromCurve = (curve, divisions = 10) => {
-    switch (curve.type) {
-      case "EllipseCurve":
-        return createPointsFromEllipseCurve(curve, divisions);
-      case "LineCurve":
-        return createPointsFromLineCurve(curve.v1, curve.v2, divisions);
-      default:
-        return [];
-    }
-  };
-  const createPointsFromEllipseCurve = (curve, divisions = 10) => {
     const points = [];
     for (let i = 0; i < divisions; i++) {
       const point = curve.getPoint(i / divisions);
-      points.push(point.x, point.y);
+      points.push(point.x, point.y, 0);
     }
     return points;
   };
-  const createPointsFromLineCurve = (startPoint, endPoint, divisions = 10) => {
-    const points = [];
-    for (let i = 0; i < divisions; i++) {
-      const point = startPoint.clone().lerp(endPoint, i / divisions);
-      points.push(point.x, point.y);
-    }
-    return points;
-  };
+
   // console.log(positions)
   return (
     <>
