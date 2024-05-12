@@ -22,6 +22,11 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/cesium": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/cesium.js"
+    ],
     "/playground": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

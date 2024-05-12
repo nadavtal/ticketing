@@ -10,5 +10,11 @@
     "files": [
       "static/chunks/node_modules_mediapipe_tasks-vision_vision_bundle_mjs.js"
     ]
+  },
+  "cesium\\index.js -> ./playground": {
+    "id": "cesium\\index.js -> ./playground",
+    "files": [
+      "static/chunks/pages_cesium_playground_js.js"
+    ]
   }
 }
