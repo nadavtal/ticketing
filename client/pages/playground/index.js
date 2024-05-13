@@ -25,13 +25,15 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import PointsSettings from "../../components/PointsSettings";
 import Scene from "./Scene";
 import UploadFile from "../../components/UploadFile";
-
+import SideBar from "../../components/SideBar";
+import Models from "../../components/Models";
+import Icons from "../../components/Icons";
 
 // const shapes = Object.keys(paths)
 
 const Playground = () => {
   const device = "desktop";
-  const [selectedShape, setSelectedShape] = useState("circle");
+
   const [showPoints, setShowPoints] = useState(true);
   const [imageSrc, setImageSrc] = useState(null);
   const [modelUrl, setModelUrl] = useState(null);
@@ -50,30 +52,62 @@ const Playground = () => {
     brain: createBrainPositions(),
   };
   // console.log(shapes)
-  useEffect(() => {
-    if (shapes[selectedShape.length] !== shapes[prevPropRef.current].length) {
-      setShowPoints(false);
-      setTimeout(() => {
-        setShowPoints(true);
-      }, 100);
-    }
+  // useEffect(() => {
+  //   if (shapes[selectedShape.length] !== shapes[prevPropRef.current].length) {
+  //     setShowPoints(false);
+  //     setTimeout(() => {
+  //       setShowPoints(true);
+  //     }, 100);
+  //   }
 
-    return () => {};
-  }, [selectedShape]);
+  //   return () => {};
+  // }, [selectedShape]);
 
   // console.log(selectedShape)
-
+  // if (extension === "svg") {
+  //   setIconFile(fileUrl);
+  //   setImageSrc(URL.createObjectURL(file));
+  // } else if (extension === "glb")  {
+  //   setModelUrl(fileUrl);
+  // }
+  // setIconFile(URL.createObjectURL(file));
+  // setFile(file)
   return (
     <>
-      <Shapes
-        shapes={Object.keys(shapes)}
-        onClick={(shape) => setSelectedShape(shape)}
-      />
-      <UploadFile 
-        file={file}
-        
+      <SideBar>
+        <Shapes
+          shapes={Object.keys(shapes)}
+          onClick={(shape) => setSelectedShape(shape)}
         />
-      {/* <PointsSettings /> */}
+        <Models />
+        <Icons />
+        <UploadFile file={file} />
+        {/* <PointsSettings /> */}
+        <div
+          className="buttons"
+          style={{
+            position: "absolute",
+            top: "20rem",
+          }}
+        >
+          <button onClick={() => setLogId(Date.now())}>Create Image</button>
+
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt="Uploaded SVG"
+              style={{
+                backgroundColor: "white",
+                width: "10rem",
+                height: "auto",
+                position: "absolute",
+                top: "5rem",
+                left: "1rem",
+              }}
+            />
+          )}
+        </div>
+      </SideBar>
       <div
         ref={wrapperRef}
         style={{
@@ -85,69 +119,15 @@ const Playground = () => {
           <Scene
             shapes={shapes}
             showPoints={showPoints}
-            selectedShape={selectedShape}
-            positions={shapes[selectedShape]}
-            targetPositions={shapes[selectedShape]}
+            // selectedShape={selectedShape}
+            // positions={shapes[selectedShape]}
+            // targetPositions={shapes[selectedShape]}
             logId={logId}
             iconFile={iconFile}
             modelUrl={modelUrl}
           />
           <OrbitControls />
         </Canvas>
-        <div
-          className="buttons"
-          style={{
-            position: "absolute",
-            top: "20rem",
-          }}
-        >
-          <button onClick={() => setLogId(Date.now())}>Create Image</button>
-
-          <input
-            type="file"
-            onChange={(event) => {
-              const file = event.target.files[0];
-              console.log(file)
-              const fileUrl = URL.createObjectURL(file);
-              //get extension
-              const extension = file.name.split('.').pop();
-              console.log(extension)
-              if (extension === "svg") {
-                setIconFile(fileUrl);
-                setImageSrc(URL.createObjectURL(file));
-              } else if (extension === "glb")  {
-                setModelUrl(fileUrl);
-              }
-              // setIconFile(URL.createObjectURL(file));
-              setFile(file)
-              // const reader = new FileReader();
-
-              // reader.onloadend = () => {
-              //   setImageSrc(reader.result);
-              // };
-
-              // if (file) {
-              //   reader.readAsDataURL(file);
-              // }
-            }}
-          />
-          {/* <form method="post" enctype="multipart/form-data" 
-            onSubmit={form => {
-              console.log(form)
-            }}>
-            <label for="file">Upload a file</label>
-            <input type="file" name="upload" />
-            <input type="submit" class="button" />
-          </form> */}
-          {imageSrc && <img src={imageSrc} alt="Uploaded SVG" style={{
-            backgroundColor: "white",
-            width: '10rem',
-            height: 'auto',
-            position: 'absolute',
-            top: '5rem',
-            left: '1rem',
-          }}/>}
-        </div>
       </div>
     </>
   );

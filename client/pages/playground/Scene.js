@@ -9,9 +9,9 @@ import MyText from "../../components/MyText";
 import IconCreater from "../../components/IconCreater";
 import RFModel from "../../components/RFModel";
 import { Environment, useEnvironment } from "@react-three/drei";
-
+import { useSelector } from "react-redux";
 const Scene = ({
-  selectedShape,
+  // selectedShape,
   shapes,
   showPoints,
   logId,
@@ -19,11 +19,14 @@ const Scene = ({
   modelUrl,
 }) => {
   const { gl: renderer, scene, camera } = useThree();
+  const modelsUrls = useSelector((state) => state.models.modelUrls);
+  const selectedShape = useSelector((state) => state.shapes.selectedShape);
+  const positions = shapes[selectedShape];
   const hdrMap = useEnvironment({
     files: enviromentMap,
   });
   useEffect(() => {
-    camera.position.set(0, 0, -3); // replace x, y, z with your desired position
+    camera.position.set(0, 0, 5); // replace x, y, z with your desired position
     camera.lookAt(0, 0, 0); // adjust this as needed
   }, []);
   useEffect(() => {
@@ -73,21 +76,33 @@ const Scene = ({
     // Stop recording after 5 seconds
     setTimeout(stopRecording, 5000);
   };
-  //   console.log(positions)
+  
+  const Models = ({
+    urls
+  }) => {
+    return (
+      <group>
+        {urls.map((url, index) => (
+          <RFModel key={index} scene={scene} modelUrl={url} index={index}/>
+        ))}
+      </group>
+    );
+  }
   return (
     <>
       {/* <Button onClick={handleClick} /> */}
       {/* <MyText scene={scene} /> */}
-      <IconCreater scene={scene} url={iconFile} />
-      {modelUrl && <RFModel scene={scene} modelUrl={modelUrl} />}
+      <IconCreater scene={scene}  />
+      <Models urls={modelsUrls} />
+      {/* {modelUrl && <RFModel scene={scene} modelUrl={modelUrl} />} */}
       <Environment map={hdrMap} />
-      {/* {positions && (
+      {positions && (
         <Points
           selectedShape={selectedShape}
-          positions={positions}
+          positions={shapes[selectedShape]}
           // targetPositions={shapes[selectedShape]}
         />
-      )} */}
+      )}
     </>
   );
 };

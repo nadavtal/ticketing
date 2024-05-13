@@ -1,11 +1,26 @@
 .page {
-    height: calc(100svh - 60px);
+    height: calc(100svh - 55px);
     background-color: black;
     overflow: hidden;
 }
 
-.shapes {
-    position: absolute;
-    z-index: 1;
+// .shapes {
+//     position: absolute;
+//     z-index: 1;
+//     color: white;
+// }
+
+.nav-link {
     color: white;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 20rem;
+    height: calc(100svh - 55px);
+    background-color: gray;
+    color: white;
+    z-index: 2;
 }

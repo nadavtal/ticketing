@@ -13,6 +13,7 @@ const RFModel = forwardRef(
       onClick,
       onPointerDown,
       onPointerUp,
+      index = 0,
       visible = true,
       viewedProductTitle,
     },
@@ -28,23 +29,24 @@ const RFModel = forwardRef(
     });
 
     const createPointsFromNodes = (nodes) => {
-      console.log("createPointsFromNodes", nodes)
+      // console.log("createPointsFromNodes", nodes)
       let points = [];
       for (const name in nodes) {
-
         const node = nodes[name];
 
         if (node instanceof Mesh) {
           // console.log(node)
-          points = [...points, ...node.geometry.attributes.position.array]
+          points = [...points, ...node.geometry.attributes.position.array];
         }
       }
+      // console.log(points)
       const { min, max } = getMinMax(points);
+      // console.log("min", min, "max", max)
       const normalized = normalize(points, min, max);
-      console.log("points", points.length)
+      console.log("points", points.length);
       return new Float32Array(normalized);
-    }
-    createPointsFromNodes(nodes)
+    };
+    // createPointsFromNodes(nodes)
     const autoScalModel = (nodesObject, maxSize) => {
       // Create an empty bounding box
       const bbox = new Box3();
@@ -53,8 +55,13 @@ const RFModel = forwardRef(
         const node = nodesObject[name];
         if (node instanceof Mesh) {
           // bbox.expandByObject(node);
-          node.geometry.attributes.position.array = normalize(
+          const { min, max } = getMinMax(
             node.geometry.attributes.position.array
+          );
+          node.geometry.attributes.position.array = normalize(
+            node.geometry.attributes.position.array,
+            min,
+            max
           );
         }
         // if (node instanceof Group) {
@@ -74,45 +81,52 @@ const RFModel = forwardRef(
       // const maxDimension = Math.max(size.x, size.y, size.z);
       // const scaleFactor = maxSize / maxDimension;
       // return scaleFactor;
-      return nodesObject
+      return nodesObject;
     };
     // autoScalModel()
     // const scaleFactor = autoScalModel(nodes, 1);
     const scaleFactor = 1;
     // console.log("scaleFactor", scaleFactor)
     return (
-      <group
-        ref={ref}
-        onClick={onClick}
-        onPointerDown={onPointerDown}
-        // onPointerUp={onPointerUp}
-        dispose={null}
-        scale={[scaleFactor, scaleFactor, scaleFactor]}
-        position={position}
-        rotation={rotation}
-        visible={visible}
-      >
-        {Object.keys(autoScalModel(nodes)).map((key, index) => {
-          const node = nodes[key];
-          if (!node.name.includes("bbox"))
-            return (
-              <mesh
-                key={index}
-                // onClick={(e) => console.log(node)}
-                // onPointerOver={() => console.log(node.userData)}
-                geometry={node.geometry}
-                material={node.material}
-                castShadow
-                receiveShadow
-                // visible={false}
-              />
-            );
-        })}
-        <Points
-          positions={createPointsFromNodes(nodes)}
-          // targetPositions={shapes[selectedShape]}
-        />
-      </group>
+      <>
+      <mesh position={[-1, -index, 0]}>
+        <group
+          ref={ref}
+          onClick={onClick}
+          onPointerDown={onPointerDown}
+          // onPointerUp={onPointerUp}
+          dispose={null}
+          scale={[scaleFactor, scaleFactor, scaleFactor]}
+          position={position}
+          rotation={rotation}
+          visible={visible}
+        >
+          {Object.keys(autoScalModel(nodes)).map((key, index) => {
+            const node = nodes[key];
+            if (!node.name.includes("bbox"))
+              return (
+                <mesh
+                  key={index}
+                  // onClick={(e) => console.log(node)}
+                  // onPointerOver={() => console.log(node.userData)}
+                  geometry={node.geometry}
+                  material={node.material}
+                  castShadow
+                  receiveShadow
+                  // visible={false}
+                />
+              );
+          })}
+        </group>
+
+      </mesh>
+        <mesh position={[1, -index, 0]}>
+          <Points
+            positions={createPointsFromNodes(nodes)}
+            // targetPositions={shapes[selectedShape]}
+          />
+        </mesh>
+      </>
     );
   }
 );

@@ -20,9 +20,9 @@ export default ({ currentUser }) => {
     });
 
   return (
-    <nav className="navbar navbar-light bg-light">
+    <nav className="navbar navbar-dark bg-dark">
       <Link className="navbar-brand" href="/">
-        GitTix
+        Future Feature
       </Link>
 
       <div className="d-flex justify-content-end">

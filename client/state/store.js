@@ -1,13 +1,12 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit'
-import menuReducer from './menu/menuSlice'
-import skillsReducer from './skills/skillsSlice';
-import tubesReducer from './tubes/tubesSlice';
+import modelsReducer from './models/modelsSlice'
+import shapesReducer from './shapes/shapesSlice'
+
 
 export const store = configureStore({
   reducer: {
-    menu: menuReducer,
-    skills: skillsReducer,
-    tubes: tubesReducer
+    models: modelsReducer,
+    shapes: shapesReducer
   }
 })
 
