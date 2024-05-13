@@ -27,6 +27,16 @@ spec:
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: 'ticketing'
+            - name: S3_STORAGE_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-storage-credentials
+                  key: S3_STORAGE_ACCESS_KEY_ID
+            - name: S3_STORAGE_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: s3-storage-credentials
+                  key: S3_STORAGE_ACCESS_SECRET
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:

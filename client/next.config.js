@@ -1,6 +1,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
-
+const withImages = require('next-images')
 module.exports = {
   webpack: (config, { webpack, isServer }) => {
     if (!isServer) {
@@ -45,6 +45,19 @@ module.exports = {
       })
     )
     config.resolve.exportsFields = []
+    config.module.rules.push({
+      test: /\.(hdr)$/,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            name: '[path][name].[ext]',
+            outputPath: 'static/',
+            publicPath: '_next/static/',
+          },
+        },
+      ],
+    })
     // return {...config, resolve: {...config.resolve, exportsFields:[]}}
     return config
   },

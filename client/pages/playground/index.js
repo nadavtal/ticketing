@@ -34,6 +34,7 @@ const Playground = () => {
   const [selectedShape, setSelectedShape] = useState("circle");
   const [showPoints, setShowPoints] = useState(true);
   const [imageSrc, setImageSrc] = useState(null);
+  const [modelUrl, setModelUrl] = useState(null);
   const [iconFile, setIconFile] = useState(null);
   const [file, setFile] = useState(null);
 
@@ -68,10 +69,10 @@ const Playground = () => {
         shapes={Object.keys(shapes)}
         onClick={(shape) => setSelectedShape(shape)}
       />
-      {/* <UploadFile 
+      <UploadFile 
         file={file}
         
-        /> */}
+        />
       {/* <PointsSettings /> */}
       <div
         ref={wrapperRef}
@@ -89,6 +90,7 @@ const Playground = () => {
             targetPositions={shapes[selectedShape]}
             logId={logId}
             iconFile={iconFile}
+            modelUrl={modelUrl}
           />
           <OrbitControls />
         </Canvas>
@@ -106,18 +108,27 @@ const Playground = () => {
             onChange={(event) => {
               const file = event.target.files[0];
               console.log(file)
-              // console.log(URL.createObjectURL(file))
-              setIconFile(URL.createObjectURL(file));
-              setFile(file)
-              const reader = new FileReader();
-
-              reader.onloadend = () => {
-                setImageSrc(reader.result);
-              };
-
-              if (file) {
-                reader.readAsDataURL(file);
+              const fileUrl = URL.createObjectURL(file);
+              //get extension
+              const extension = file.name.split('.').pop();
+              console.log(extension)
+              if (extension === "svg") {
+                setIconFile(fileUrl);
+                setImageSrc(URL.createObjectURL(file));
+              } else if (extension === "glb")  {
+                setModelUrl(fileUrl);
               }
+              // setIconFile(URL.createObjectURL(file));
+              setFile(file)
+              // const reader = new FileReader();
+
+              // reader.onloadend = () => {
+              //   setImageSrc(reader.result);
+              // };
+
+              // if (file) {
+              //   reader.readAsDataURL(file);
+              // }
             }}
           />
           {/* <form method="post" enctype="multipart/form-data" 
