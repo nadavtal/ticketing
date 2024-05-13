@@ -3,16 +3,19 @@ import buildClient from '../api/build-client';
 import Header from '../components/header';
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import '../app.scss'
+import  { Provider } from "react-redux";
+import { store } from "../state/store";
 
 const AppComponent = ({ Component, pageProps, currentUser }) => {
-  return (
-    <div>
+  return <Provider store={store}>
+  
       <Header currentUser={currentUser} />
+
       <div className="page">
         <Component currentUser={currentUser} {...pageProps} />
       </div>
-    </div>
-  );
+  
+  </Provider>;
 };
 
 AppComponent.getInitialProps = async (appContext) => {

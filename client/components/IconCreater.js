@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Points from "./Points/Points";
 import SVGPathCommander from "svg-path-commander";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
+import { useSelector, useDispatch } from "react-redux";
 import { parse } from "svg-parser";
 import {
   DoubleSide,
@@ -10,15 +11,15 @@ import {
   MeshBasicMaterial,
   ShapeGeometry,
 } from "three";
-import { normalize } from "../utils/utils3d";
+import { getMinMax, normalize } from "../utils/utils3d";
 const IconCreater = ({
-  url,
   scene,
   // url = 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg'
 }) => {
   const [positions, setPositions] = useState();
   const groupRef = useRef();
   const positionsArrays = useRef([]);
+  const iconsUrls = useSelector((state) => state.shapes.iconsUrls);
   //   const font = useLoader(FontLoader, './public/fonts/Montserrat Black_Italic.json');
   // useEffect(() => {
   //   if (url) {
@@ -61,9 +62,10 @@ const IconCreater = ({
   //   }
   // }, [file])
   useEffect(() => {
-    if (url) loadIcon(url);
+    console.log(iconsUrls);
+    if (iconsUrls.length > 0) loadIcon(iconsUrls[0]);
     else setPositions(null);
-  }, [url]);
+  }, [iconsUrls]);
 
   function mergeFloat32Arrays(arrays) {
     let totalLength = arrays.reduce((acc, val) => acc + val.length, 0);
@@ -84,38 +86,11 @@ const IconCreater = ({
       // called when the resource is loaded
       function (data) {
         const paths = data.paths;
-        const group = new Group();
+
         console.log({ paths });
         createPointsFromPaths(paths);
-        for (let i = 0; i < paths.length; i++) {
-          const path = paths[i];
-          const material = new MeshBasicMaterial({
-            color: path.color,
-            side: DoubleSide,
-            depthWrite: false,
-          });
 
-          const shapes = SVGLoader.createShapes(path);
-          console.log({ shapes });
-          for (let j = 0; j < shapes.length; j++) {
-            const shape = shapes[j];
-            // createPointsFromShape(shape);
-            const geometry = new ShapeGeometry(shape);
-            // console.log({geometry})
-            geometry.attributes.position.array = normalize(
-              geometry.attributes.position.array
-            );
-            // positionsArrays.current.push(geometry.attributes.position.array)
-            const mesh = new Mesh(geometry, material);
-          
-            group.add(mesh);
-          }
-        }
-        group.position.x = 2
-        groupRef.current = group;
-        // console.log(positionsArrays.current);
-
-        scene.add( group );
+        createModelFromPaths(paths);
       },
       // called when loading is in progresses
       function (xhr) {
@@ -174,6 +149,41 @@ const IconCreater = ({
       });
     }
   };
+  const createModelFromPaths = (paths) => {
+    const group = new Group();
+
+    // console.log(positionsArrays.current);
+
+    scene.add(group);
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      const material = new MeshBasicMaterial({
+        color: path.color,
+        side: DoubleSide,
+        depthWrite: false,
+      });
+
+      const shapes = SVGLoader.createShapes(path);
+      // console.log({ shapes });
+      for (let j = 0; j < shapes.length; j++) {
+        const shape = shapes[j];
+        // createPointsFromShape(shape);
+        const geometry = new ShapeGeometry(shape);
+        const { min, max } = getMinMax(geometry.attributes.position.array);
+        geometry.attributes.position.array = normalize(
+          geometry.attributes.position.array,
+          min,
+          max
+        );
+        // positionsArrays.current.push(geometry.attributes.position.array)
+        const mesh = new Mesh(geometry, material);
+
+        group.add(mesh);
+      }
+    }
+    group.position.x = 2
+    groupRef.current = group;
+  };
   const createPointsFromPaths = (paths) => {
     console.log({ paths });
     for (let i = 0; i < paths.length; i++) {
@@ -188,7 +198,8 @@ const IconCreater = ({
       });
     }
     const merged = mergeFloat32Arrays(positionsArrays.current);
-    const normalizedArray = normalize(merged);
+    const { min, max } = getMinMax(merged);
+    const normalizedArray = normalize(merged, min, max);
     // console.log(merged)
     setPositions(normalizedArray);
   };

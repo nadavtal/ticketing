@@ -1,4 +1,5 @@
 export const normalize = (array, min, max) => {
+  // console.log("normalize", array, min, max)
     // const max = Math.max(...array);
     // const min = Math.min(...array);
 
@@ -9,5 +10,5 @@ export const getMinMax = (array) => {
     const max = Math.max(...array);
     const min = Math.min(...array);
 
-    return { max, min };
+    return { min, max };
   }
