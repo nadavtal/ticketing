@@ -10,9 +10,8 @@ import {
   MeshBasicMaterial,
   ShapeGeometry,
 } from "three";
+import { normalize } from "../utils/utils3d";
 const IconCreater = ({
-  file,
-  iconFile,
   url,
   scene,
   // url = 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg'
@@ -164,12 +163,7 @@ const IconCreater = ({
     const float32Array = new Float32Array(normalizedArray);
     return float32Array;
   };
-  const normalize = (array) => {
-    const max = Math.max(...array);
-    const min = Math.min(...array);
 
-    return array.map((value) => (value - min) / (max - min));
-  };
   const createPointsFromShape = (shape) => {
     if (shape.curves.length > 0) {
       positionsArrays.current.push(createPointsFromCurves(shape.curves, 30));
@@ -222,7 +216,6 @@ const IconCreater = ({
     <>
       {positions && (
         <Points
-          //   selectedShape={selectedShape}
           positions={positions}
           // targetPositions={shapes[selectedShape]}
         />

@@ -19,6 +19,7 @@ const UploadFile = ({
     //   });
     
       useEffect(() => {
+        console.log('file', file)
         if (file){
             uploadFile()
         }
@@ -29,7 +30,14 @@ const UploadFile = ({
       
     const uploadFile = async () =>  {
         console.log(file)
-        const response = await axios.post('/api/uploads', file);
+        const formData = new FormData();
+        // files.forEach(file => {
+        //   formData.append('file', file);
+        //   size += file.size;
+        // });
+        formData.append('file', file);
+        // formData.append('bucketName', bucketName);
+        const response = await axios.post('/api/uploads', formData);
         console.log(response)
         return null
     }

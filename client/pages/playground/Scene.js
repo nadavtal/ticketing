@@ -3,25 +3,36 @@ import { useFrame, useThree, useLoader } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import Points from "../../components/Points/Points";
 
-import {flattenSVG} from 'flatten-svg';
-
+import { flattenSVG } from "flatten-svg";
+import enviromentMap from '../../public/hdr_maps/studio_small_06_1k.hdr'
 import MyText from "../../components/MyText";
 import IconCreater from "../../components/IconCreater";
+import RFModel from "../../components/RFModel";
+import { Environment, useEnvironment } from "@react-three/drei";
 
-
-
-const Scene = ({ selectedShape, shapes, showPoints, logId, iconFile }) => {
+const Scene = ({
+  selectedShape,
+  shapes,
+  showPoints,
+  logId,
+  iconFile,
+  modelUrl,
+}) => {
   const { gl: renderer, scene, camera } = useThree();
-
-  
+  const hdrMap = useEnvironment({
+    files: enviromentMap,
+  });
+  useEffect(() => {
+    camera.position.set(0, 0, -3); // replace x, y, z with your desired position
+    camera.lookAt(0, 0, 0); // adjust this as needed
+  }, []);
   useEffect(() => {
     if (logId) {
-        createMP4FromScene();
+      createMP4FromScene();
     }
 
     return () => {};
   }, [logId]);
-
 
   const createImageFromScene = () => {
     // Manually render a frame
@@ -37,38 +48,39 @@ const Scene = ({ selectedShape, shapes, showPoints, logId, iconFile }) => {
   const createMP4FromScene = () => {
     let chunks = [];
     let recorder;
-    
+
     const startRecording = () => {
       let stream = renderer.domElement.captureStream(60); // 25 FPS
       recorder = new MediaRecorder(stream);
       recorder.ondataavailable = (event) => chunks.push(event.data);
       recorder.start();
     };
-    
+
     const stopRecording = () => {
       recorder.onstop = (event) => {
-        let blob = new Blob(chunks, { type: 'video/mp4' });
+        let blob = new Blob(chunks, { type: "video/mp4" });
         let url = URL.createObjectURL(blob);
-        let link = document.createElement('a');
+        let link = document.createElement("a");
         link.href = url;
-        link.download = 'output.mp4';
+        link.download = "output.mp4";
         link.click();
       };
       recorder.stop();
     };
-    
+
     startRecording();
-    
+
     // Stop recording after 5 seconds
     setTimeout(stopRecording, 5000);
-
   };
-//   console.log(positions)
+  //   console.log(positions)
   return (
     <>
       {/* <Button onClick={handleClick} /> */}
       {/* <MyText scene={scene} /> */}
-    <IconCreater file={iconFile} scene={scene} url={iconFile}/>
+      <IconCreater scene={scene} url={iconFile} />
+      {modelUrl && <RFModel scene={scene} modelUrl={modelUrl} />}
+      <Environment map={hdrMap} />
       {/* {positions && (
         <Points
           selectedShape={selectedShape}
